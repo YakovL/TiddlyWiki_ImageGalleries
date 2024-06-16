@@ -1,11 +1,11 @@
 /***
-|''Name''|FancyBox2Plugin|
-|''Description''|Adds a macro to create image galleries via the fancyBox lib|
-|''Version''|0.9.4|
-|''Source''|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2Plugin|
-|''Documentation''|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2PluginInfo|
-|''Author''|Yakov Litvin|
-|''Licence''|[[BSD-like open source license|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#%5B%5BYakov%20Litvin%20Public%20Licence%5D%5D]]|
+|Name         |FancyBox2Plugin|
+|Description  |Adds a macro to create image galleries (via the fancyBox library)|
+|Version      |0.9.4|
+|Source       |https://github.com/YakovL/TiddlyWiki_ImageGalleries/blob/master/FancyBox2Plugin.js|
+|Documentation|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2PluginInfo|
+|Author       |Yakov Litvin|
+|Licence      |[[BSD-like open source license|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#%5B%5BYakov%20Litvin%20Public%20Licence%5D%5D]]|
 ***/
 // // Here goes minified and hidden fancyBox v2.1.5 (from fancyapps.com, [[license|fancyapps.com/fancybox/#license]]) /%
 
