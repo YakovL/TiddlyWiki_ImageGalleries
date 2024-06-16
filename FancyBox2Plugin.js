@@ -61,136 +61,133 @@ var css = store.getTiddlerText("FancyBox2Plugin##StyleSheetFancyBox"),
     shadowName = "StyleSheetFancyBox";
 commentRegExp = /\/%%%(.*?)%%%\//g;
 css = css.replace(commentRegExp,'/*$1*/');
-config.shadowTiddlers[shadowName] = "/*{{{*/\n"+css.substring(4,css.length-4)+"\n/*}}}*/";
+config.shadowTiddlers[shadowName] = "/*{{{*/\n" + css.substring(4, css.length - 4) + "\n/*}}}*/";
 store.addNotification(shadowName, refreshStyles);
 
 // define the macro
 config.macros.fancyBox = {
     handler: function(place, macroName, params, wikifier, paramString, tiddler) {
 
-    // build a gallery id based on a "hash" of the macro usage
-    var macroTWcode = wikifier.source.substring(wikifier.matchStart, wikifier.nextMatch),
-        galleryId = macroTWcode.replace(/['"<>\n]/g,"");
+		// build a gallery id based on the "hash" of the macro text
+		var macroTWcode = wikifier.source.substring(wikifier.matchStart, wikifier.nextMatch),
+			galleryId = macroTWcode.replace(/['"<>\n]/g, "");
 
-        // parse params, build the images' data
-        var pParams = paramString.parseParams("image",null,true,false,true),
-            imagesData = [], i, j,
-            images = pParams[0]["image"],
-            forEachImageParams = { "thumb":1, "title":1, "label":1 },
-            thumbs = pParams[0]["thumb"],
-            align  = getParam(pParams,"align",""),
-            float  = getParam(pParams,"float",""),
-            config = getParam(pParams,"config",""),
-            userGalleryId = getParam(pParams,"galleryId","");
+		// parse params, build the images' data
+		var pParams = paramString.parseParams("image", null, true, false, true),
+			imagesData = [], i, j,
+			images = pParams[0]["image"],
+			forEachImageParams = { "thumb":1, "title":1, "label":1 },
+			thumbs = pParams[0]["thumb"],
+			align  = getParam(pParams, "align", ""),
+			float  = getParam(pParams, "float", ""),
+			config = getParam(pParams, "config", ""),
+			userGalleryId = getParam(pParams, "galleryId", "");
 //# either parse the folder param here or introduce a global txtGalleriesFolder param or both
-        galleryId = userGalleryId || galleryId;
+		galleryId = userGalleryId || galleryId;
 
-        // get global params that define styles for each image/wrapper
-        var imagesParamRegExp   =   /images-([\w\-]+)/,
-            wrappersParamRegExp = /wrappers-([\w\-]+)/,
-            removeDashes = function(str) {
-            return str.replace(/-(\w)/g,
-                function($0,$1){ return $1.toUpperCase(); });
-            },
-            p, match,
-            imagesParams   = {},
-            wrappersParams = {};
-        for(p in pParams[0]) {
-            if(match = imagesParamRegExp.exec(p))
-                imagesParams[removeDashes(match[1])] = pParams[0][p][0];
-            if(match = wrappersParamRegExp.exec(p))
-                wrappersParams[removeDashes(match[1])] = pParams[0][p][0];
-        }
+		// get global params that define styles for each image/wrapper
+		var imagesParamRegExp   =   /images-([\w\-]+)/,
+			wrappersParamRegExp = /wrappers-([\w\-]+)/,
+			removeDashes = function(str) {
+				return str.replace(/-(\w)/g,
+				function($0, $1){ return $1.toUpperCase() });
+			},
+			p, match,
+			imagesParams   = {},
+			wrappersParams = {};
+		for(p in pParams[0]) {
+			if(match = imagesParamRegExp.exec(p))
+				imagesParams[removeDashes(match[1])] = pParams[0][p][0];
+			if(match = wrappersParamRegExp.exec(p))
+				wrappersParams[removeDashes(match[1])] = pParams[0][p][0];
+		}
 
-        // parse fancyBox params from config
-        try{ config = eval("(function(){return "+config+"})()") }catch(e){config="";}
+		// parse fancyBox params from config
+		try{ config = eval("(function(){return " + config + "})()") } catch(e) { config="" }
 
-        if(!images) {
-            createTiddlyError(place, "wrong macro usage (click here for details)", 'there should be at least one "image" argument (first anonymous params are also considered as "image"s)');
-            return;
-        }
-        // find the index of the first image param; see if all the "image"s go next
-        for(i = 1; i < pParams.length; i++)
-            if(pParams[i].name == "image")
-                break;
-        var allImageParamsGoOneByOne = true;
-        for(j = 0; j < images.length; j++)
-            if(pParams[i+j].name != "image") {
-                allImageParamsGoOneByOne = false;
-                break;
-            }
+		if(!images) {
+			createTiddlyError(place, "wrong macro usage (click here for details)",
+				'there should be at least one "image" argument (first anonymous params are also considered as "image"s)');
+			return;
+		}
+		// find the index of the first image param; see if all the "image"s go next
+		for(i = 1; i < pParams.length; i++)
+			if(pParams[i].name == "image")
+				break;
+		var allImageParamsGoOneByOne = true;
+		for(j = 0; j < images.length; j++)
+			if(pParams[i + j].name != "image") {
+				allImageParamsGoOneByOne = false;
+				break;
+			}
 
-        var feiParam, k, feipValues;
-        if(allImageParamsGoOneByOne)
-        {
-            for(i = 0; i < images.length; i++)
-                imagesData.push({ link: images[i] });
+		var feiParam, feipValues;
+		if(allImageParamsGoOneByOne) {
+			for(i = 0; i < images.length; i++)
+				imagesData.push({ link: images[i] });
 
-            for(feiParam in forEachImageParams)
-                if(feipValues = pParams[0][feiParam])
-                    for(i = 0; i < feipValues.length; i++)
-                        if(imagesData[i])
-                            imagesData[i][feiParam] = feipValues[i];
-        } else
-            for(j = 0; i < pParams.length; i++) // i is not reset by intent
-            {
-                if(pParams[i].name == "image")
-                    imagesData[j++] = { link: pParams[i].value };
+			for(feiParam in forEachImageParams)
+				if(feipValues = pParams[0][feiParam])
+					for(i = 0; i < feipValues.length; i++)
+						if(imagesData[i])
+							imagesData[i][feiParam] = feipValues[i];
+		} else
+			for(j = 0; i < pParams.length; i++) { // i is not reset by intent
+				if(pParams[i].name == "image")
+					imagesData[j++] = { link: pParams[i].value };
 
-                for(feiParam in forEachImageParams)
-                    if(pParams[i].name == feiParam)
-                        imagesData[j-1][feiParam] = pParams[i].value;
-            }
+				for(feiParam in forEachImageParams)
+					if(pParams[i].name == feiParam)
+						imagesData[j - 1][feiParam] = pParams[i].value;
+			}
 
-    // -----------------------------------------------------------
-        // create the images, wrappers and other stuff
-        var imagesHolder = createTiddlyElement(place,"div",null,"gallery");
-        if(align)
-            imagesHolder.align = align;
-        if(float) {
-            imagesHolder.style.display = "inline-block";
+		// create the images, wrappers and other stuff
+		var imagesHolder = createTiddlyElement(place, "div", null, "gallery");
+		if(align)
+			imagesHolder.align = align;
+		if(float) {
+			imagesHolder.style.display = "inline-block";
 // doesn't work properly yet
 // see the successful solution among tests
-            imagesHolder.style.float = float;
-        }
+			imagesHolder.style.float = float;
+		}
 
-        var imageHolder, image, link, title;
-        for(i = 0; i < imagesData.length; i++)
-        {
-            link = imagesData[i].link;
+		var imageHolder, image, link, title;
+		for(i = 0; i < imagesData.length; i++)
+		{
+			link = imagesData[i].link;
 
-            imageHolder = createTiddlyElement(imagesHolder,"a",null,"fancybox");
-            // work as a gallery, if there's more then one image:
-            if(imagesData.length > 1 || userGalleryId)
-                imageHolder.setAttribute("data-fancybox-group",galleryId);
-            // add href, this is important for proper size setting and images not being hidden:
-            imageHolder.setAttribute("href",link);
-            title = imagesData[i].label || imagesData[i].title;
-            if(title)
-                imageHolder.title = title;
+			imageHolder = createTiddlyElement(imagesHolder, "a", null, "fancybox");
+			// work as a gallery, if there's more then one image:
+			if(imagesData.length > 1 || userGalleryId)
+				imageHolder.setAttribute("data-fancybox-group", galleryId);
+			// add href, this is important for proper size setting and images not being hidden:
+			imageHolder.setAttribute("href", link);
+			title = imagesData[i].label || imagesData[i].title;
+			if(title) imageHolder.title = title;
 
-            // set the "thumbnail" image (shown when fancybox is not activated):
-            image = createTiddlyElement(imageHolder,"img");
-            image.src = imagesData[i].thumb || link;
+			// set the "thumbnail" image (shown when fancybox is not activated):
+			image = createTiddlyElement(imageHolder, "img");
+			image.src = imagesData[i].thumb || link;
 
-            var setThisHere = function(element,property,value) {
-                if(property == "class")
-                    element.classList.add(value)
-                else
-                    element.style[property] = value;
-            };
-            for(p in imagesParams)
-                setThisHere(image,p,imagesParams[p]);
-            for(p in wrappersParams)
-                setThisHere(imageHolder,p,wrappersParams[p]);
-        }
+			var setThisHere = function(element, property, value) {
+				if(property == "class")
+					element.classList.add(value)
+				else
+					element.style[property] = value;
+			};
+			for(p in imagesParams)
+				setThisHere(image, p, imagesParams[p]);
+			for(p in wrappersParams)
+				setThisHere(imageHolder, p, wrappersParams[p]);
+		}
 
-        // activate fancyBox
-        if(imagesData.length > 1 || userGalleryId)
-            jQuery('a[data-fancybox-group="'+galleryId+'"]').fancybox(config);
-        else
-            jQuery(imageHolder).fancybox(config);
-    }
+		// activate fancyBox
+		if(imagesData.length > 1 || userGalleryId)
+			jQuery('a[data-fancybox-group="' + galleryId + '"]').fancybox(config);
+		else
+			jQuery(imageHolder).fancybox(config);
+	}
 };
 //}}}
 /***
