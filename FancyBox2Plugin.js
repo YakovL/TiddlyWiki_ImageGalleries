@@ -80,6 +80,7 @@ config.macros.fancyBox = {
 			thumbs = pParams[0]["thumb"],
 			align  = getParam(pParams, "align", ""),
 			float  = getParam(pParams, "float", ""),
+			folder = getParam(pParams, "folder", ""),
 			config = getParam(pParams, "config", ""),
 			userGalleryId = getParam(pParams, "galleryId", "");
 //# either parse the folder param here or introduce a global txtGalleriesFolder param or both
@@ -152,10 +153,14 @@ config.macros.fancyBox = {
 			imagesHolder.style.float = float;
 		}
 
+		var getFullPath = function(file, folder) {
+			if(!folder) return file;
+			return folder + "/" + file;
+		}
 		var imageHolder, image, link, title;
 		for(i = 0; i < imagesData.length; i++)
 		{
-			link = imagesData[i].link;
+			link = getFullPath(imagesData[i].link, folder);
 
 			imageHolder = createTiddlyElement(imagesHolder, "a", null, "fancybox");
 			// work as a gallery, if there's more then one image:

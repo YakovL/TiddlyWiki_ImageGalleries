@@ -933,11 +933,28 @@ Each gallery gets an auto-generated id. You can also set the id yourself by usin
 &lt;&lt;fancyBox ... galleryId:&quot;my-id&quot;&gt;&gt;
 }}}
 
+If you have multiple images in a single folder, you may want to use the ''{{{folder}}} param'': it makes all pathes of images relative to it (&quot;&quot; if omitted):
+{{{
+&lt;&lt;fancyBox &quot;some path/subpath1/image1.jpg&quot;
+           &quot;some path/subpath2/image2.png&quot;
+           ...
+&gt;&gt;
+}}}
+is the same as
+{{{
+&lt;&lt;fancyBox &quot;subpath1/image1.jpg&quot;
+           &quot;subpath2/image2.png&quot;
+            ...
+            folder:&quot;some path&quot;
+&gt;&gt;
+}}}
+This also allows to move large numbers of images without changing each url in each macro.
+
 !!!Styles definition and tweaking
 ~FancyBox styling is contained in the StyleSheetFancyBox shadow. It can be changed to meet your needs; deleting it brings it back to its initial (shadow) state.
 
 !!!What is not implemented (yet)
-~FancyBox allows to work with content other than images, which is to be implemented in further versions. There are some other features that may be implemented in the future, like global settings for pathes (of folders containing images) to reduce unnecessary routine, better representation of thumbnails etc.</pre>
+~FancyBox allows to work with content other than images, which is to be implemented in further versions. Some other features may be implemented in the future, like {{{thumbFolder}}} param separate from {{{folder}}}, settings for better representation of thumbnails etc.</pre>
 </div>
 <div title="InnerExternalLinkPlugin" creator="Yakov Litvin" modifier="Yakov Litvin" created="201305132202" modified="201405311030" tags="systemConfig" changecount="39">
 <pre>/***
