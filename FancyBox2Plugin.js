@@ -1,7 +1,7 @@
 /***
 |Name         |FancyBox2Plugin|
 |Description  |Adds a macro to create image galleries (via the fancyBox library)|
-|Version      |0.9.4|
+|Version      |0.9.5|
 |Source       |https://github.com/YakovL/TiddlyWiki_ImageGalleries/blob/master/FancyBox2Plugin.js|
 |Documentation|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2PluginInfo|
 |Author       |Yakov Litvin|
@@ -77,10 +77,10 @@ config.macros.fancyBox = {
 			imagesData = [], i, j,
 			images = pParams[0]["image"],
 			forEachImageParams = { "thumb":1, "title":1, "label":1 },
-			thumbs = pParams[0]["thumb"],
 			align  = getParam(pParams, "align", ""),
 			float  = getParam(pParams, "float", ""),
 			folder = getParam(pParams, "folder", ""),
+			thumbFolder = getParam(pParams, "thumbFolder", folder),
 			config = getParam(pParams, "config", ""),
 			userGalleryId = getParam(pParams, "galleryId", "");
 //# either parse the folder param here or introduce a global txtGalleriesFolder param or both
@@ -171,9 +171,10 @@ config.macros.fancyBox = {
 			title = imagesData[i].label || imagesData[i].title;
 			if(title) imageHolder.title = title;
 
-			// set the "thumbnail" image (shown when fancybox is not activated):
+			// "thumbnail" image (shown when fancybox is not activated):
+			var thumb = imagesData[i].thumb
 			image = createTiddlyElement(imageHolder, "img");
-			image.src = imagesData[i].thumb || link;
+			image.src = thumb ? getFullPath(thumb, thumbFolder) : link;
 
 			var setThisHere = function(element, property, value) {
 				if(property == "class")
