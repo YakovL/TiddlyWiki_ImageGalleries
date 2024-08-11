@@ -760,6 +760,18 @@ Any CSS property of each image can set using params with the {{{image-}}} prefix
  title:&quot;field of a cylindrical magnet&quot; &quot;field of a cylindrical magnet on a larger scale&quot; &quot;field of two parallel magnets&quot; &quot;field of a couple of antiparallel magnets&quot; &quot;field of two attracting magnets&quot; &quot;field of two repelling magnets&quot;
  images-max-width:&quot;17.5%&quot; images-max-height:&quot;2.7cm&quot;
 &gt;&gt;
+!!!!Using custom HTML instead of thumbnails
+Starting the {{{thumb}}} param with {{{html:}}} allows to use a custom HTML instead:
+{{{
+&lt;&lt;fancyBox
+       "img/1.JPG" thumb:"html: custom &lt;i&gt;html&lt;/i&gt; instead of a thumb"
+ image:"img/2.JPG" thumb:"img/2 thumb.png"
+&gt;&gt;
+}}}
+&lt;&lt;fancyBox
+       "img/1.JPG" thumb:"html: custom &lt;i&gt;html&lt;/i&gt; instead of a thumb"
+ image:"img/2.JPG" thumb:"img/2 thumb.png"
+&gt;&gt;
 !!!!Adding custom classes to images
 Any class can be added to images like this:
 {{{

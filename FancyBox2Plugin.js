@@ -1,7 +1,7 @@
 /***
 |Name         |FancyBox2Plugin|
 |Description  |Create image galleries (via a macro that uses the fancyBox library)|
-|Version      |0.9.5|
+|Version      |0.9.6|
 |Source       |https://github.com/YakovL/TiddlyWiki_ImageGalleries/blob/master/FancyBox2Plugin.js|
 |Documentation|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2PluginInfo|
 |Author       |Yakov Litvin|
@@ -171,21 +171,27 @@ config.macros.fancyBox = {
 			title = imagesData[i].label || imagesData[i].title;
 			if(title) imageHolder.title = title;
 
-			// "thumbnail" image (shown when fancybox is not activated):
-			var thumb = imagesData[i].thumb
-			image = createTiddlyElement(imageHolder, "img");
-			image.src = thumb ? getFullPath(thumb, thumbFolder) : link;
+			// "thumbnail" image path or custom html ("html: myHTML")
+			var thumb = imagesData[i].thumb,
+				htmlMatch = thumb ? /^html:((?:.|\n)+)/mg.exec(thumb) : null,
+				html = htmlMatch ? htmlMatch[1] : "";
 
-			var setThisHere = function(element, property, value) {
-				if(property == "class")
-					element.classList.add(value)
-				else
-					element.style[property] = value;
-			};
-			for(p in imagesParams)
-				setThisHere(image, p, imagesParams[p]);
-			for(p in wrappersParams)
-				setThisHere(imageHolder, p, wrappersParams[p]);
+			if(html) imageHolder.innerHTML = html;
+			else {
+				image = createTiddlyElement(imageHolder, "img");
+				image.src = thumb ? getFullPath(thumb, thumbFolder) : link;
+
+				var setThisHere = function(element, property, value) {
+					if(property == "class")
+						element.classList.add(value)
+					else
+						element.style[property] = value;
+				};
+				for(p in imagesParams)
+					setThisHere(image, p, imagesParams[p]);
+				for(p in wrappersParams)
+					setThisHere(imageHolder, p, wrappersParams[p]);
+			}
 		}
 
 		// activate fancyBox
