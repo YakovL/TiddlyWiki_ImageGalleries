@@ -1,6 +1,6 @@
 /***
 |Name         |FancyBox2Plugin|
-|Description  |Adds a macro to create image galleries (via the fancyBox library)|
+|Description  |Create image galleries (via a macro that uses the fancyBox library)|
 |Version      |0.9.5|
 |Source       |https://github.com/YakovL/TiddlyWiki_ImageGalleries/blob/master/FancyBox2Plugin.js|
 |Documentation|https://yakovl.github.io/TiddlyWiki_ImageGalleries/#FancyBox2PluginInfo|
