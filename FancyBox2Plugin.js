@@ -60,7 +60,7 @@ d[0].offsetTop||15===d[0].offsetTop;d.remove();a.fixedPosition=e}f.extend(b.defa
 var css = store.getTiddlerText("FancyBox2Plugin##StyleSheetFancyBox"),
     shadowName = "StyleSheetFancyBox";
 commentRegExp = /\/%%%(.*?)%%%\//g;
-css = css.replace(commentRegExp,'/*$1*/');
+css = css.replace(commentRegExp, '/*$1*/');
 config.shadowTiddlers[shadowName] = "/*{{{*/\n" + css.substring(4, css.length - 4) + "\n/*}}}*/";
 store.addNotification(shadowName, refreshStyles);
 
@@ -78,6 +78,7 @@ config.macros.fancyBox = {
 			images = pParams[0]["image"],
 			forEachImageParams = { "thumb":1, "title":1, "label":1 },
 			align  = getParam(pParams, "align", ""),
+			inline = getParam(pParams, "inline", paramString.match(/\sinline(\s|$)/gm)),
 			float  = getParam(pParams, "float", ""),
 			folder = getParam(pParams, "folder", ""),
 			thumbFolder = getParam(pParams, "thumbFolder", folder),
@@ -144,6 +145,8 @@ config.macros.fancyBox = {
 
 		// create the images, wrappers and other stuff
 		var imagesHolder = createTiddlyElement(place, "div", null, "gallery");
+		if(inline)
+			imagesHolder.style.display = "inline-block";
 		if(align)
 			imagesHolder.align = align;
 		if(float) {

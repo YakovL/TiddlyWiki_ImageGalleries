@@ -801,6 +801,13 @@ gives (with StyleSheet):
 }}}
 (can be {{{left}}}, {{{center}}} or {{{right}}})
 &lt;&lt;fancyBox &quot;img/1.JPG&quot; title:&quot;field of a cylindrical magnet&quot; thumb:&quot;img/1 thumb.png&quot; align:center&gt;&gt;
+!!!!Inline
+Sometimes, it's useful to show a thumb or custom html inline, for instance a clickable emoji: &lt;&lt;fancyBox
+ &quot;img/1.JPG&quot; thumb:&quot;html: 👁️&quot; inline
+&gt;&gt;. This can be done via the {{{inline}}} param:
+{{{
+&lt;&lt;fancyBox &quot;img/1.JPG&quot; thumb:&quot;html: 👁️&quot; inline&gt;&gt;
+}}}
 !!!!Gallery id
 Each gallery has and id which is by default generated so that different galleries have diffent ones. If two galleries have the same id, they are displayed as one, which can be useful. This can be made, usgin the {{{galleryId}}} param, here's a couple of &quot;concept&quot; examples:
 * +++[Two-parts gallery]
