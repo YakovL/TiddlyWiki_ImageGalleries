@@ -562,81 +562,78 @@ body {font-size:0.8em;}
 
 As usually, you can send your feedback to the Google group ([[main FB2P thread|https://groups.google.com/forum/#!topic/tiddlywiki/5K0-Znmf9us]]), but also you can leave comments right here (presumably, I will learn about them faster; I'm testing this now):
 
-&lt;&lt;disqus single&gt;&gt;</pre>
+&lt;&lt;disqus thread:&quot;ImageGalleries repo&quot; forum:ylprojects&gt;&gt;
 </div>
 <div title="DefaultTiddlers" modifier="Yakov Litvin" created="201408161821" modified="201408161821" changecount="2">
 <pre>[[Creating image galleries in TiddlyWiki]]</pre>
 </div>
-<div title="DisqusPlugin" modifier="Yakov Litvin" created="201408272028" modified="201408272028" tags="systemConfig" changecount="2">
+<div title="DisqusPlugin" modifier="Yakov Litvin" created="201408272028" modified="202410231001" tags="systemConfig" changecount="3">
 <pre>/***
-|Version|0.0.1|
+|Description |Add Disqus threads (comments) to your tiddlers|
+|Source      |https://github.com/YakovL/TiddlyWiki_DisqusPlugin/blob/master/DisqusPlugin.js|
+|Author      |Yakov Litvin|
+|Version     |0.3.1|
+|License     |[[MIT|https://github.com/YakovL/TiddlyWiki_YL_ExtensionsCollection/blob/master/Common%20License%20(MIT)]]|
 ***/
 //{{{
 config.macros.disqus = {
-	handler: function(place,macroName,params,wikifier,paramString,tiddler)
-	{
-		if(!window.isLocal)
-			window.isLocal = function() { return (document.location.protocol == &quot;file:&quot;); }
-		if(window.isLocal())
-			return;
+	mountThread: function(container, shouldSubstituteContainer, forumName, threadId, threadUrl) {
+		// adapted from github.com/bimlas/tw5-disqus/blob/master/plugins/disqus/macro/comments.js
+		const loaderScriptId = &quot;DISQUS-LOADER&quot;
+		const currentLoaderScript = document.getElementById(loaderScriptId)
+		if(currentLoaderScript !== null) (document.head || document.body).removeChild(currentLoaderScript)
 
-		var pParams = paramString.parseParams(&quot;mode&quot;,null,true,false,true),
-		    mode = getParam(pParams,&quot;mode&quot;,&quot;&quot;),
-		    shortname = getParam(pParams,&quot;shortname&quot;,&quot;ylprojects&quot;), // for my personal usage
-		    identifier = getParam(pParams,&quot;identifier&quot;,&quot;&quot;),
-		    url = getParam(pParams,&quot;url&quot;,&quot;&quot;);
-// disqus_shortname		required: your forum shortname
-// disqus_identifier		tells Disqus how to uniquely identify the current page.
-// disqus_url			tells Disqus the location of the page for permalinking purposes
-
-		if(mode == &quot;single&quot;) {
-// this worked aside the fact that the thread wasn't the one I expected ('first test page') - probably disqus_identifier and disqus_url should be set:
-			var el = createTiddlyElement(place,&quot;div&quot;,&quot;disqus_thread&quot;); //,className),
-			    disqus_shortname = shortname;
-			if(identifier)
-				var disqus_identifier = identifier;
-			if(url)
-				var disqus_url = url;
-			
-			(function() {
-			    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-			    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-			    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-			})();
-		} else {
-
-			setStylesheet(&quot;iframe.&quot;+some_class+&quot; { border: none; width: 48%; height: 100%; }&quot;);
-
-var some_id = &quot;some_id&quot;, some_class = &quot;some_iframe_class&quot;;
-			var iframe = createTiddlyElement(place,&quot;iframe&quot;,some_id,some_class);
-			if (iframe.contentWindow)
-				iframe = iframe.contentWindow;
-			else {
-				if (iframe.contentDocument &amp;&amp; iframe.contentDocument.document)
-					iframe = iframe.contentDocument.document;
-				else
-					iframe = iframe.contentDocument;
-			}
-
-//			iframe.document.open();
-			iframe.document.body.innerHTML = '&lt;b&gt;la-la&lt;/b&gt;'+'&lt;div id=\'disqus_thread\'&gt;&lt;/div&gt;&lt;script type=\'text/javascript\'&gt;\n'+
-'alert(\'test\')\n'+
-// script is not launched currently
-'    var disqus_shortname  = \'ylprojects\';\n'+
-'    var disqus_identifier = \'first test page\';\n'+
-// also there are parameters to change:
-// disqus_identifier		tells Disqus how to uniquely identify the current page.
-// disqus_url			tells Disqus the location of the page for permalinking purposes
-'    (function() {\n'+
-'        var dsq = document.createElement(\'script\'); dsq.type = \'text/javascript\'; dsq.async = true;\n'+
-'        dsq.src = \'http://\' + disqus_shortname + \'.disqus.com/embed.js\';\n'+
-'        (document.getElementsByTagName(\'head\')[0] || document.getElementsByTagName(\'body\')[0]).appendChild(dsq);\n'+
-'    })();\n'+
-'&lt;/script&gt;'+'txt';
-//			iframe.document.close();
+		// D script updates the first element with this id on load and ignores others
+		const commentsElementId = &quot;disqus_thread&quot;
+		const threadDivClass = &quot;disqus_thread&quot; // not needed really
+		const $prevCommentsElement = jQuery(&quot;#&quot; + commentsElementId)
+		if($prevCommentsElement[0]) { // maybe use while instead
+			const oldUrl = $prevCommentsElement.data(&quot;thread&quot;).url
+			const oldId = $prevCommentsElement.data(&quot;thread&quot;).id
+			const btn = jQuery(&quot;&lt;a class=button&gt;show comments&lt;/a&gt;&quot;)
+			.data(&quot;thread&quot;, { url: oldUrl, id: oldId })
+			btn.on(&quot;click&quot;, () =&gt; {
+				// * forumName – pass via .data as well?
+				config.macros.disqus.mountThread(btn, true, forumName, oldId, oldUrl)
+			})
+			$prevCommentsElement.replaceWith(btn)
 		}
+		const $thread = jQuery(&quot;&lt;div&gt;&lt;/div&gt;&quot;).addClass(threadDivClass).attr(&quot;id&quot;, commentsElementId)
+			.data(&quot;thread&quot;, { url: threadUrl, id: threadId })
+		shouldSubstituteContainer ? jQuery(container).replaceWith($thread) : $thread.appendTo(container)
+
+		// basic code from https://ylprojects.disqus.com/admin/settings/universalcode/
+		window.disqus_config = function () {
+			// see more at https://help.disqus.com/customer/en/portal/articles/2158629
+			if(threadUrl) this.page.url = threadUrl
+			this.page.identifier = threadId
+		}
+
+		;(function() {
+			const loaderScript = document.createElement('script')
+			loaderScript.src = 'https://' + forumName + '.disqus.com/embed.js'
+			loaderScript.id = loaderScriptId
+			loaderScript.setAttribute('data-timestamp', +new Date())
+			;(document.head || document.body).appendChild(loaderScript)
+		})()		
+	},
+	handler: function(place, macroName, params, wikifier, paramString, tiddler) {
+		const isLocal = window.isLocal || function() { return (document.location.protocol == &quot;file:&quot;) }
+		if(isLocal()) return
+
+		const pParams = paramString.parseParams(&quot;anon&quot;, null, true, false, true)
+		// forum shortname, also known as disqus_shortname
+		// TODO: add a config for the default value instead of a hardcoded value for my personal usage
+		const forumShortname = getParam(pParams, &quot;forum&quot;, &quot;&quot;)
+		// also known as disqus_identifier
+		// TODO: check if this works with non-latin letters; .oO if just tiddler.title is enough, or we have to use window.location/SiteUrl as well (maybe permalink
+		const threadId = getParam(pParams, &quot;thread&quot;, tiddler ? tiddler.title : &quot;outside-content&quot;)
+		// used for permalinking purposes, also known as disqus_url
+		const url = getParam(pParams, &quot;url&quot;, tiddler.title &amp;&amp; story.getPermalink ? story.getPermalink(tiddler.title) : &quot;&quot;)
+
+		this.mountThread(place, false, forumShortname, threadId, url)
 	}
-};
+}
 //}}}</pre>
 </div>
 <div title="Example of a gallery without thumbnails" modifier="Yakov Litvin" created="201408241423" modified="201408241423" changecount="2">
